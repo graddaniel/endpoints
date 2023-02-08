@@ -14,14 +14,13 @@ class Application {
         this.app.set('sequelize', sequelize);
         this.app.set('models', sequelize.models);
 
-        /**
-         * FIX ME!
-         * @returns contract by id
-         */
+        this.initializeRoutes();
+    }
+
+    initializeRoutes() {
         this.app.get('/contracts/:id', getProfile, async (req, res) => {
             const { Contract } = req.app.get('models');
             const { id } = req.params;
-            // console.log("ID",id)
             const contract = await Contract.findOne({ where: { id } });
 
             if (!contract) {
