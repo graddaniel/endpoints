@@ -26,7 +26,7 @@ class Application {
         this.app.use((error, req, res, next) => {
             console.error(`Custom error handler: ${error}`);
 
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Unexpected error');
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
         });
     }
 
