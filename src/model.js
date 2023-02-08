@@ -29,7 +29,7 @@ Profile.init(
   },
   {
     sequelize,
-    modelName: 'Profile'
+    modelName: 'profile'
   }
 );
 
@@ -46,7 +46,7 @@ Contract.init(
   },
   {
     sequelize,
-    modelName: 'Contract'
+    modelName: 'contract'
   }
 );
 
@@ -71,20 +71,20 @@ Job.init(
   },
   {
     sequelize,
-    modelName: 'Job'
+    modelName: 'job'
   }
 );
 
-Profile.hasMany(Contract, {as :'Contractor',foreignKey:'contractorId'})
-Contract.belongsTo(Profile, {as: 'Contractor'})
-Profile.hasMany(Contract, {as : 'Client', foreignKey:'clientId'})
-Contract.belongsTo(Profile, {as: 'Client'})
-Contract.hasMany(Job)
-Job.belongsTo(Contract)
+Profile.hasMany(Contract, {as :'contractor',foreignKey:'contractorId'});
+Contract.belongsTo(Profile, {as: 'contractor'});
+Profile.hasMany(Contract, {as : 'client', foreignKey:'clientId'});
+Contract.belongsTo(Profile, {as: 'client'});
+Contract.hasMany(Job);
+Job.belongsTo(Contract);
 
 module.exports = {
   sequelize,
   Profile,
   Contract,
-  Job
+  Job,
 };

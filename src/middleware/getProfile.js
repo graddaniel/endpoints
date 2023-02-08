@@ -3,20 +3,20 @@ const { StatusCodes } = require('http-status-codes');
 
 
 async function getProfile (req, res, next) {
-    const { Profile } = req.app.get('models');
+    const { profile: profileModel } = req.app.get('models');
 
     const profileId = req.get('profile_id');
     if (!profileId) {
-        return res.status(StatusCodes.UNAUTHORIZED).end();
+        return res.status(StatusCodes.UNAUTHORIZED).send('Missing profile_id header');
     }
 
-    const profile = await Profile.findOne({
+    const profile = await profileModel.findOne({
         where: {
             id: profileId,
         },
     });
     if (!profile) {
-        return res.status(StatusCodes.UNAUTHORIZED).end();
+        return res.status(StatusCodes.UNAUTHORIZED).send('Profile not found');
     }
 
     req.profile = profile;

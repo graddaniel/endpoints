@@ -1,7 +1,14 @@
 const { Profile, Contract, Job } = require('../src/model');
 
 /* WARNING THIS WILL DROP THE CURRENT DATABASE */
-seed();
+(async function() {
+  try {
+    await seed();
+  } catch(error) {
+    console.error(error)
+  }
+})();
+
 
 async function seed() {
   // create tables
@@ -225,6 +232,5 @@ async function seed() {
       paymentDate:'2020-08-14T23:11:26.737Z',
       contractId: 3,
     }),
-  
   ]);
 }
