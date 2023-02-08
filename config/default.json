@@ -1,5 +1,9 @@
 {
     "server": {
         "port": 3001
+    },
+    "sequelize": {
+        "dialect": "sqlite",
+        "storage": "./database.sqlite3"
     }
 }

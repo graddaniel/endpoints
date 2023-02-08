@@ -1,9 +1,9 @@
+const config = require('config');
+
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: './database.sqlite3'
-});
+
+const sequelize = new Sequelize(config.get('sequelize'));
 
 class Profile extends Sequelize.Model {}
 Profile.init(

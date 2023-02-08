@@ -1,14 +1,16 @@
 const config = require('config');
 
-const app = require('./app');
+const Application = require('./Application');
 
 init();
 
 async function init() {
   try {
-    const port = config.get('server.port')
+    const port = config.get('server.port');
 
-    app.listen(port, () => {
+    const application = new Application({ port });
+
+    application.start(() => {
       console.log(`Express App Listening on Port ${port}`);
     });
 
