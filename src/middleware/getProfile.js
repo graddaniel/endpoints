@@ -3,6 +3,7 @@ const { StatusCodes } = require('http-status-codes');
 
 
 async function getProfile (req, res, next) {
+    //TODO replace this with ProfileService call
     const { profile: profileModel } = req.app.get('models');
 
     const profileId = req.get('profile_id');

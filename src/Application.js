@@ -2,26 +2,27 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { StatusCodes } = require('http-status-codes');
 const wrap = require('express-async-wrapper')
-// TODO Dont couple this class with persistance layer
-const { Op } = require("sequelize");
-
 
 const { sequelize } = require('./model');
 const { getProfile } = require('./middleware/getProfile');
+const ContractsService = require('./services/ContractsService');
+const ContractsController = require('./controllers/contractsController');
 
-const DECIMAL_RADIX = 10;
 
 class Application {
     constructor({ port }) {
         this.port = port;
+        this.dataModels = sequelize.models;
 
-        this.app = express();;
+        this.app = express();
         this.app.use(bodyParser.json());
-        this.app.set('sequelize', sequelize);
         this.app.set('models', sequelize.models);
 
+        this.initializeServices();
+        this.initializeControllers();
         this.initializeRoutes();
 
+        //TODO export to middleware
         this.app.use((error, req, res, next) => {
             console.error(`Custom error handler: ${error}`);
 
@@ -29,35 +30,27 @@ class Application {
         });
     }
 
-    initializeRoutes() {
-        this.app.get('/contracts/:id', getProfile, wrap(async (req, res) => {
-            const contractId = parseInt(req.params.id, DECIMAL_RADIX);
-            const { id: profileId } = req.profile;
-            const { contract: contractModel } = req.app.get('models');
+    initializeServices = () => {
+        this.services = new Map();
 
-            const contract = await contractModel.findOne({
-                where: {
-                    [Op.and]: [
-                        { id: contractId },
-                        {
-                            [Op.or]: [
-                                { contractorId: profileId },
-                                { clientId: profileId },
-                            ],
-                        },
-                    ],
-                }
-            });
-            
-            if (!contract) {
-                return res.status(StatusCodes.NOT_FOUND).end();
-            }
-
-            res.json(contract);
+        this.services.set('Contracts', new ContractsService({
+            contractModel: this.dataModels.contract,
         }));
     }
 
-    start(callback) {
+    initializeControllers = () => {
+        this.controllers = new Map();
+
+        const contractsService = this.services.get('Contracts');
+        this.controllers.set('Contracts', new ContractsController({ contractsService }));
+    }
+
+    initializeRoutes = () => {
+        const contractsController = this.controllers.get('Contracts');
+        this.app.get('/contracts/:id', getProfile, wrap(contractsController.getContract));
+    }
+
+    start = (callback) => {
         return this.app.listen(this.port, callback);
     }
 }
