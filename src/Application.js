@@ -46,8 +46,16 @@ class Application {
     }
 
     initializeRoutes = () => {
+        //TODO group routes and split them into different files
         const contractsController = this.controllers.get('Contracts');
         this.app.get('/contracts/:id', getProfile, wrap(contractsController.getContract));
+        this.app.get('/contracts', getProfile, () => res.status(200).send("NOT IMPLEMENTED"));
+        this.app.get('/jobs/unpaid', getProfile, () => res.status(200).send("NOT IMPLEMENTED"));
+        this.app.post('/jobs/:job_id/pay', getProfile, () => res.status(200).send("NOT IMPLEMENTED"));
+        this.app.post('/balances/deposit/:userId', getProfile, () => res.status(200).send("NOT IMPLEMENTED"));
+        this.app.get('/admin/best-profession?start=<date>&end=<date>', () => res.status(200).send("NOT IMPLEMENTED"));
+        this.app.get('/admin/best-clients?start=<date>&end=<date>&limit=<integer>', () => res.status(200).send("NOT IMPLEMENTED"));
+
     }
 
     start = (callback) => {
