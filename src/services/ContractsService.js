@@ -30,6 +30,23 @@ class ContractsService {
 
         return contract;
     }
+
+    //TODO add limit
+    getAllUsersContracts = async ({
+        userId,
+    }) => {
+        const allUsersContracts = await this.contractModel.findAll({
+            where: {
+                [Op.or]: [{
+                    clientId: userId,
+                }, {
+                    contractorId: userId,
+                }],
+            },
+        });
+
+        return allUsersContracts;
+    }
 }
 
 module.exports = ContractsService;

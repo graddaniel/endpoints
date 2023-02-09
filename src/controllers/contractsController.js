@@ -1,3 +1,6 @@
+const { StatusCodes } = require('http-status-codes');
+
+
 const DECIMAL_RADIX = 10;
 
 class ContractsController {
@@ -16,7 +19,17 @@ class ContractsController {
             profileId,
         });
 
-        res.json(contract);
+        res.status(StatusCodes.OK).json(contract);
+    }
+
+    getAllContracts = async (req, res) => {
+        const { id: profileId } = req.profile;
+
+        const allUsersContracts = await this.contractsService.getAllUsersContracts({
+            userId: profileId,
+        });
+
+        res.status(StatusCodes.OK).json(allUsersContracts);
     }
 }
 
