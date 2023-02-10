@@ -1,6 +1,6 @@
 const config = require('config');
 
-const Application = require('./Application');
+const Application = require('./application');
 
 init();
 
