@@ -1,4 +1,7 @@
-const { Profile, Contract, Job } = require('../src/model');
+const Sequelize = require('sequelize');
+const config = require('config');
+
+const { Profile, Contract, Job, initializeModels } = require('../src/model');
 
 /* WARNING THIS WILL DROP THE CURRENT DATABASE */
 (async function() {
@@ -11,6 +14,9 @@ const { Profile, Contract, Job } = require('../src/model');
 
 
 async function seed() {
+  const sequelize = new Sequelize(config.get('sequelize'));
+  initializeModels(sequelize);
+
   // create tables
   await Profile.sync({ force: true });
   await Contract.sync({ force: true });
@@ -145,31 +151,37 @@ async function seed() {
       contractorId: 8
     }),
     Job.create({
+      id: 1,
       description: 'work',
       price: 200,
       contractId: 1,
     }),
     Job.create({
+      id: 2,
       description: 'work',
       price: 201,
       contractId: 2,
     }),
     Job.create({
+      id: 3,
       description: 'work',
       price: 202,
       contractId: 3,
     }),
     Job.create({
+      id: 4,
       description: 'work',
       price: 200,
       contractId: 4,
     }),
     Job.create({
+      id: 5,
       description: 'work',
       price: 200,
       contractId: 7,
     }),
     Job.create({
+      id: 6,
       description: 'work',
       price: 2020,
       paid:true,
@@ -177,6 +189,7 @@ async function seed() {
       contractId: 7,
     }),
     Job.create({
+      id: 7,
       description: 'work',
       price: 200,
       paid:true,
@@ -184,6 +197,7 @@ async function seed() {
       contractId: 2,
     }),
     Job.create({
+      id: 8,
       description: 'work',
       price: 200,
       paid:true,
@@ -191,6 +205,7 @@ async function seed() {
       contractId: 3,
     }),
     Job.create({
+      id: 9,
       description: 'work',
       price: 200,
       paid:true,
@@ -198,6 +213,7 @@ async function seed() {
       contractId: 1,
     }),
     Job.create({
+      id: 10,
       description: 'work',
       price: 200,
       paid:true,
@@ -205,6 +221,7 @@ async function seed() {
       contractId: 5,
     }),
     Job.create({
+      id: 11,
       description: 'work',
       price: 21,
       paid:true,
@@ -212,6 +229,7 @@ async function seed() {
       contractId: 1,
     }),
     Job.create({
+      id: 12,
       description: 'work',
       price: 21,
       paid:true,
@@ -219,6 +237,7 @@ async function seed() {
       contractId: 2,
     }),
     Job.create({
+      id: 13,
       description: 'work',
       price: 121,
       paid:true,
@@ -226,6 +245,7 @@ async function seed() {
       contractId: 3,
     }),
     Job.create({
+      id: 14,
       description: 'work',
       price: 121,
       paid:true,
