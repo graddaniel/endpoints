@@ -8,7 +8,7 @@ class BalancesController {
     }
 
     depositToUser = async (req, res) => {
-        const { id: profileId } = req.profile;
+        const { id: profileId } = req.profile; //TODO probably useless
         const { userId } = req.params;
         //TODO finish when requirement is clear
         const amount = 100; //maybe from the payload?

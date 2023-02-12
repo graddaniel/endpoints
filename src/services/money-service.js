@@ -21,21 +21,65 @@ class MoneyService {
             throw new Error('User not found')
         }
 
-        const result = await this.dataModels.profile.increment({
-            balance: amount
-        }, {
-            where: {
-                id: userId,
-            }
-        });
-
-        const updateSuccesfull = result[0][1];
-        if (!updateSuccesfull) {
+        try {
+            await this.dataModels.profile.increment({
+                balance: amount
+            }, {
+                where: {
+                    id: userId,
+                }
+            });
+        } catch (error) {
             //TODO custom error
-            throw new Error(`Failed to deposit money to the User`);
+            throw new Error(`Database operation failed. ${error.message}`)
+        }
+    }
+
+    transfer = async (criteria, transaction) => {
+        const {
+            fromId,
+            toId,
+            amount,
+        } = criteria;
+
+        const issuer = await this.dataModels.profile.findOne({
+            id: fromId,
+        }, {
+            transaction,
+        });
+        if (!issuer) {
+            //TODO custom error
+            throw new Error('User not found')
         }
 
-        console.log(result)
+        if (issuer.balance < amount) {
+            //TODO custom error
+            throw new Error('Insufficient funds');
+        }
+
+        try {
+            await this.dataModels.profile.decrement({
+                balance: amount
+            }, {
+                where: {
+                    id: fromId,
+                },
+                transaction,
+            });
+
+            await this.dataModels.profile.increment({
+                balance: amount
+            }, {
+                where: {
+                    id: toId,
+                },
+                transaction,
+            });
+        } catch (error) {
+            //TODO custom sequelize error
+            console.error(error)
+            throw new Error(`Database operation failed. ${error.message}`)
+        }
     }
 };
 

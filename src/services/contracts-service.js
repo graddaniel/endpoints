@@ -1,6 +1,7 @@
 // TODO Dont couple this class with persistance layer
 const { Op } = require('sequelize');
 
+
 class ContractsService {
     constructor({
         dataModels,
@@ -23,7 +24,10 @@ class ContractsService {
             throw new Error('Contract not found');
         }
 
-        if (contract.clientId !== profileId && contract.contractorId !== profileId) {
+        if (
+            contract.clientId !== profileId &&
+            contract.contractorId !== profileId
+        ) {
             //TODO custom error
             throw new Error(`You're not allowed to access this contract`);
         }

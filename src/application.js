@@ -1,23 +1,31 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { StatusCodes } = require('http-status-codes');
-const wrap = require('express-async-wrapper')
+const wrap = require('express-async-wrapper');
+const config = require('config');
+const Sequelize = require('sequelize');
 
-const { sequelize } = require('./model');
+const { initializeModels } = require('./model');
 const { getProfile } = require('./middleware/get-profile');
 const ContractsService = require('./services/contracts-service');
+const JobsService = require('./services/jobs-service');
 const MoneyService = require('./services/money-service');
 const BalancesController = require('./controllers/balances-controller');
 const ContractsController = require('./controllers/contracts-controller');
+const JobsController = require('./controllers/jobs-controller');
+
 
 class Application {
     constructor({ port }) {
         this.port = port;
-        this.dataModels = sequelize.models;
+        this.sequelize = new Sequelize(config.get('sequelize'));
+        initializeModels(this.sequelize)
+
+        this.dataModels = this.sequelize.models;
 
         this.app = express();
         this.app.use(bodyParser.json());
-        this.app.set('models', sequelize.models);
+        this.app.set('models', this.sequelize.models);
 
         this.initializeServices();
         this.initializeControllers();
@@ -36,11 +44,21 @@ class Application {
         this.services = new Map();
 
         //TODO maybe dont pass all the models at once
-        this.services.set('Contracts', new ContractsService({
+        const contractsService = new ContractsService({
             dataModels: this.dataModels,
-        }));
-        this.services.set('Money', new MoneyService({
+        });
+        this.services.set('Contracts', contractsService);
+
+        const moneyService = new MoneyService({
             dataModels: this.dataModels,
+        });
+        this.services.set('Money', moneyService);
+
+        this.services.set('Jobs', new JobsService({
+            dataModels: this.dataModels,
+            moneyService,
+            contractsService,
+            sequelize: this.sequelize,
         }));
     }
 
@@ -51,7 +69,10 @@ class Application {
         this.controllers.set('Balances', new BalancesController({ moneyService }));
 
         const contractsService = this.services.get('Contracts');
-        this.controllers.set('Contracts', new ContractsController({ contractsService })); 
+        this.controllers.set('Contracts', new ContractsController({ contractsService }));
+
+        const jobsService = this.services.get('Jobs');
+        this.controllers.set('Jobs', new JobsController({ jobsService }));
     }
 
     initializeRoutes = () => {
@@ -59,8 +80,10 @@ class Application {
         const contractsController = this.controllers.get('Contracts');
         this.app.get('/contracts/:id', getProfile, wrap(contractsController.getContract));
         this.app.get('/contracts', getProfile, wrap(contractsController.getAllContracts));
+
+        const jobsController = this.controllers.get('Jobs');
         this.app.get('/jobs/unpaid', getProfile, (req, res) => res.status(200).send("NOT IMPLEMENTED"));
-        this.app.post('/jobs/:job_id/pay', getProfile, (req, res) => res.status(200).send("NOT IMPLEMENTED"));
+        this.app.post('/jobs/:jobId/pay', getProfile, wrap(jobsController.pay));
 
         const balancesController = this.controllers.get('Balances');
         this.app.post('/balances/deposit/:userId', getProfile, wrap(balancesController.depositToUser));
