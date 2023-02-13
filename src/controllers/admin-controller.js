@@ -17,11 +17,6 @@ class AdminController {
         const startDate = searchParams.get('start');
         const endDate = searchParams.get('end');
 
-        //TODO there's no limit here, this should go to the other endpoint
-        // const limit = limitParam === null
-        //     ? DEFAULT_RESULTS_COUNT
-        //     : parseInt(limitParam, DECIMAL_RADIX);
-
         const bestProfessionList = await this.statisticsService.getBestPaidContractors({
             startDate,
             endDate,

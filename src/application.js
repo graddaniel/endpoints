@@ -17,6 +17,23 @@ const JobsController = require('./controllers/jobs-controller');
 const StatisticsService = require('./services/statistics-service');
 
 
+/*
+NOTES:
+
+Requirements:
+-The requirement about 25% of all jobs~ was unclear, because of bad grammar, so it was assumed that
+the deposit amount should not exceed 25% of all user's unpaid jobs values summed together
+-It was not defined where the deposit endpoint should get the deposit amount from, so its read from the body
+
+Portential improvements:
+-Decoupling of persistance library from the services (sequelize is passed to services)
+-Groupping routes together and moving their definitions into separate files
+
+TODO:
+-custom error handler with custom errors
+-input validation
+*/
+
 class Application {
     constructor({ port }) {
         this.port = port;
@@ -45,7 +62,6 @@ class Application {
     initializeServices = () => {
         this.services = new Map();
 
-        //TODO maybe dont pass all the models at once
         const contractsService = new ContractsService({
             dataModels: this.dataModels,
         });
@@ -53,6 +69,7 @@ class Application {
 
         const moneyService = new MoneyService({
             dataModels: this.dataModels,
+            sequelize: this.sequelize,
         });
         this.services.set('Money', moneyService);
 

@@ -18,7 +18,6 @@ class JobsService {
         userId,
         jobId,
     }) => {
-        //TODO ad ids to jobs
         const job = await this.dataModels.job.findOne({
             where: {
                 id: jobId,

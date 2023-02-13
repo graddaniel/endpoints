@@ -1,5 +1,8 @@
 const { StatusCodes } = require('http-status-codes');
 
+
+const DECIMAL_RADIX = 10;
+
 class BalancesController {
     constructor({
         moneyService,
@@ -9,11 +12,12 @@ class BalancesController {
 
     depositToUser = async (req, res) => {
         const { id: profileId } = req.profile; //TODO probably useless
-        const { userId } = req.params;
-        //TODO finish when requirement is clear
-        const amount = 100; //maybe from the payload?
+        const userId = parseInt(req.params.userId, DECIMAL_RADIX);
+        const { amount } = req.body;
+
         await this.moneyService.depositToUser({
-            userId,
+            currentUserId: profileId,
+            targetUserId: userId,
             amount,
         });
 
