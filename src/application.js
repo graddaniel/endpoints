@@ -10,9 +10,11 @@ const { getProfile } = require('./middleware/get-profile');
 const ContractsService = require('./services/contracts-service');
 const JobsService = require('./services/jobs-service');
 const MoneyService = require('./services/money-service');
+const AdminController = require('./controllers/admin-controller');
 const BalancesController = require('./controllers/balances-controller');
 const ContractsController = require('./controllers/contracts-controller');
 const JobsController = require('./controllers/jobs-controller');
+const StatisticsService = require('./services/statistics-service');
 
 
 class Application {
@@ -60,19 +62,26 @@ class Application {
             contractsService,
             sequelize: this.sequelize,
         }));
+
+        this.services.set('Statistics', new StatisticsService({
+            sequelize: this.sequelize,
+        }));
     }
 
     initializeControllers = () => {
         this.controllers = new Map();
 
-        const moneyService = this.services.get('Money');
-        this.controllers.set('Balances', new BalancesController({ moneyService }));
+        const statisticsService = this.services.get('Statistics');
+        this.controllers.set('Admin', new AdminController({ statisticsService }));
 
         const contractsService = this.services.get('Contracts');
         this.controllers.set('Contracts', new ContractsController({ contractsService }));
 
         const jobsService = this.services.get('Jobs');
         this.controllers.set('Jobs', new JobsController({ jobsService }));
+
+        const moneyService = this.services.get('Money');
+        this.controllers.set('Balances', new BalancesController({ moneyService }));
     }
 
     initializeRoutes = () => {
@@ -87,8 +96,10 @@ class Application {
 
         const balancesController = this.controllers.get('Balances');
         this.app.post('/balances/deposit/:userId', getProfile, wrap(balancesController.depositToUser));
-        this.app.get('/admin/best-profession?start=<date>&end=<date>', (req, res) => res.status(200).send("NOT IMPLEMENTED"));
-        this.app.get('/admin/best-clients?start=<date>&end=<date>&limit=<integer>', (req, res) => res.status(200).send("NOT IMPLEMENTED"));
+
+        const adminController = this.controllers.get('Admin');
+        this.app.get('/admin/best-profession', wrap(adminController.getBestProfession));
+        this.app.get('/admin/best-clients', wrap(adminController.getBestClients));
 
     }
 

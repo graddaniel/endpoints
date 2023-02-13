@@ -1,4 +1,4 @@
-const { Op, QueryTypes } = require('sequelize');
+const { QueryTypes } = require('sequelize');
 
 
 class JobsService {
@@ -59,7 +59,7 @@ class JobsService {
         console.log(result);
     }
 
-    getUsersUnpaidActiveJobs = async ({
+    getUsersUnpaidActiveJobs = ({
         userId,
     }) => {
         const unpaidActiveJobsQuery = `\
@@ -70,7 +70,7 @@ WHERE c.status = 'in_progress' \
 AND (c.contractorId = :userId OR c.clientId = :userId) \
 `;
 
-        const usersUnpaidActiveJobs = await this.sequelize.query(
+        return this.sequelize.query(
             unpaidActiveJobsQuery, {
                 type: QueryTypes.SELECT,
                 raw: true,
@@ -79,8 +79,6 @@ AND (c.contractorId = :userId OR c.clientId = :userId) \
                 },
             }
         );
-
-        return usersUnpaidActiveJobs;
     }
 }
 

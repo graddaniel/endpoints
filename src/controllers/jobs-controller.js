@@ -16,7 +16,7 @@ class JobsController {
                 userId: profileId,
             });
 
-        res.status(StatusCodes.OK).send(usersUnpaidActiveJobs);
+        res.status(StatusCodes.OK).json(usersUnpaidActiveJobs);
     }
 
     pay = async (req, res) => {

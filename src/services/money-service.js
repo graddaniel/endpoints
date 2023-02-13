@@ -35,6 +35,7 @@ class MoneyService {
         }
     }
 
+    //TODO if transaction argument is missing, create it here to make sure whole the function is atomi
     transfer = async (criteria, transaction) => {
         const {
             fromId,
