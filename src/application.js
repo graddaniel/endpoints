@@ -82,7 +82,7 @@ class Application {
         this.app.get('/contracts', getProfile, wrap(contractsController.getAllContracts));
 
         const jobsController = this.controllers.get('Jobs');
-        this.app.get('/jobs/unpaid', getProfile, (req, res) => res.status(200).send("NOT IMPLEMENTED"));
+        this.app.get('/jobs/unpaid', getProfile, wrap(jobsController.getUnpaidJobs));
         this.app.post('/jobs/:jobId/pay', getProfile, wrap(jobsController.pay));
 
         const balancesController = this.controllers.get('Balances');

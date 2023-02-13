@@ -1,3 +1,6 @@
+const { Op, QueryTypes } = require('sequelize');
+
+
 class JobsService {
     constructor({
         dataModels,
@@ -12,7 +15,7 @@ class JobsService {
     }
 
     pay = async ({
-        profileId,
+        userId,
         jobId,
     }) => {
         //TODO ad ids to jobs
@@ -25,7 +28,7 @@ class JobsService {
         //TODO remove sequelize coupling
         const result = await this.sequelize.transaction(async transaction => {
             const contract = await this.contractsService.findContract({
-                profileId,
+                profileId: userId,
                 contractId: job.contractId,
             }, {
                 transaction,
@@ -54,6 +57,30 @@ class JobsService {
         });
 
         console.log(result);
+    }
+
+    getUsersUnpaidActiveJobs = async ({
+        userId,
+    }) => {
+        const unpaidActiveJobsQuery = `\
+SELECT * FROM jobs j \
+LEFT JOIN contracts c \
+ON  j.contractId = c.id \
+WHERE c.status = 'in_progress' \
+AND (c.contractorId = :userId OR c.clientId = :userId) \
+`;
+
+        const usersUnpaidActiveJobs = await this.sequelize.query(
+            unpaidActiveJobsQuery, {
+                type: QueryTypes.SELECT,
+                raw: true,
+                replacements: {
+                    userId,
+                },
+            }
+        );
+
+        return usersUnpaidActiveJobs;
     }
 }
 

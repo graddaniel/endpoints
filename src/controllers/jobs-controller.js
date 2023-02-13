@@ -8,12 +8,23 @@ class JobsController {
         this.jobsService = jobsService;
     }
 
+    getUnpaidJobs = async (req, res) => {
+        const { id: profileId } = req.profile;
+
+        const usersUnpaidActiveJobs = 
+            await this.jobsService.getUsersUnpaidActiveJobs({
+                userId: profileId,
+            });
+
+        res.status(StatusCodes.OK).send(usersUnpaidActiveJobs);
+    }
+
     pay = async (req, res) => {
         const { id: profileId } = req.profile;
         const { jobId } = req.params;
 
         await this.jobsService.pay({
-            profileId,
+            userId: profileId,
             jobId,
         });
 
