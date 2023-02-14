@@ -29,6 +29,7 @@ Portential improvements:
 -Decoupling of persistance library from the services (sequelize is passed to services)
 -Groupping routes together and moving their definitions into separate files
 -Profile operations could go into a separate service
+-DECIMAL_RADIX could go into a constants file
 
 TODO:
 -custom error handler with custom errors

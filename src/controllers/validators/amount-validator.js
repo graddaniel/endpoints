@@ -2,7 +2,7 @@ const ValidationError = require('./validation-error');
 
 class AmountValidator {
     static validate(amount) {
-        if (typeof amount !== 'number') {
+        if (typeof amount !== 'number' || isNaN(amount)) {
             throw new ValidationError('amount is not a number');
         }
 

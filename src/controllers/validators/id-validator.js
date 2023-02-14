@@ -2,7 +2,7 @@ const ValidationError = require('./validation-error');
 
 class IdValidator {
     static validate(id) {
-        if (typeof id !== 'number') {
+        if (typeof id !== 'number' || isNaN(id)) {
             throw new ValidationError('id is not a number');
         }
 

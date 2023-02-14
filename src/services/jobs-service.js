@@ -1,5 +1,6 @@
 const { QueryTypes } = require('sequelize');
 const BusinessDomainError = require('./errors/business-domain-error');
+const ResourceNotFoundError = require('./errors/resource-not-found-error');
 
 
 class JobsService {
@@ -24,6 +25,14 @@ class JobsService {
                 id: jobId,
             },
         });
+
+        if (!job) {
+            throw new ResourceNotFoundError('Job not found');
+        }
+
+        if (job.paid) {
+            throw new BusinessDomainError('Job is already paid');
+        }
 
         //TODO remove sequelize coupling
         const result = await this.sequelize.transaction(async transaction => {

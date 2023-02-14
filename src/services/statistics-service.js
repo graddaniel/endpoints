@@ -1,4 +1,5 @@
 const { QueryTypes } = require('sequelize');
+const BusinessDomainError = require('./errors/business-domain-error');
 
 
 class StatisticsService {
@@ -12,6 +13,12 @@ class StatisticsService {
         startDate,
         endDate,
     }) => {
+        if (new Date(startDate) >= new Date(endDate)) {
+            throw new BusinessDomainError(
+                'Start date should be earlier than end date'
+            );
+        }
+
         const selectBestPaidContractorsQuery = `\
 SELECT firstName || ' ' || lastName as fullName, earnings \
 FROM profiles \
@@ -43,6 +50,12 @@ ON contractors.id = profiles.id`;
         endDate,
         limit,
     }) => {
+        if (new Date(startDate) >= new Date(endDate)) {
+            throw new BusinessDomainError(
+                'Start date should be earlier than end date'
+            );
+        }
+
         const selectBestPayingClientsQuery = `\
 SELECT firstName || ' ' || lastName as fullName, payments \
 FROM profiles \

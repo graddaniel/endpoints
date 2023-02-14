@@ -3,6 +3,8 @@ const { StatusCodes } = require('http-status-codes');
 const IdValidator = require('./validators/id-validator');
 
 
+const DECIMAL_RADIX = 10;
+
 class JobsController {
     constructor({
         jobsService,
@@ -23,7 +25,7 @@ class JobsController {
 
     pay = async (req, res) => {
         const { id: profileId } = req.profile;
-        const { jobId } = req.params;
+        const jobId = parseInt(req.params.jobId, DECIMAL_RADIX);
 
         IdValidator.validate(jobId);
 

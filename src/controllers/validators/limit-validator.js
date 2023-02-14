@@ -3,7 +3,7 @@ const ValidationError = require('./validation-error');
 
 class LimitValidator {
     static validate(limit) {
-        if (typeof limit !== 'number') {
+        if (typeof limit !== 'number' || isNaN(limit)) {
             throw new ValidationError('Limit is not a number');
         }
 
