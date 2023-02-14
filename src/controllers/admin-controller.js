@@ -1,5 +1,8 @@
 const { StatusCodes } = require('http-status-codes');
 
+const DateValidator = require('./validators/date-validator');
+const LimitValidator = require('./validators/limit-validator');
+
 
 const DEFAULT_RESULTS_COUNT = 2;
 const DECIMAL_RADIX = 10;
@@ -16,6 +19,9 @@ class AdminController {
 
         const startDate = searchParams.get('start');
         const endDate = searchParams.get('end');
+
+        DateValidator.validate(startDate);
+        DateValidator.validate(endDate);
 
         const bestProfessionList = await this.statisticsService.getBestPaidContractors({
             startDate,
@@ -35,6 +41,10 @@ class AdminController {
         const limit = limitParam === null
             ? DEFAULT_RESULTS_COUNT
             : parseInt(limitParam, DECIMAL_RADIX);
+
+        DateValidator.validate(startDate);
+        DateValidator.validate(endDate);
+        LimitValidator.validate(limit);
 
         const bestClientsList = await this.statisticsService.getBestPayingClients({
             startDate,

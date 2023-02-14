@@ -1,5 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 
+const IdValidator = require('./validators/id-validator');
+
 
 const DECIMAL_RADIX = 10;
 
@@ -13,6 +15,8 @@ class ContractsController {
     getContract = async (req, res) => {
         const contractId = parseInt(req.params.id, DECIMAL_RADIX);
         const { id: profileId } = req.profile;
+
+        IdValidator.validate(contractId);
 
         const contract = await this.contractsService.findContract({
             contractId,

@@ -1,5 +1,8 @@
 const { StatusCodes } = require('http-status-codes');
 
+const AmountValidator = require('./validators/amount-validator');
+const IdValidator = require('./validators/id-validator');
+
 
 const DECIMAL_RADIX = 10;
 
@@ -11,9 +14,12 @@ class BalancesController {
     }
 
     depositToUser = async (req, res) => {
-        const { id: profileId } = req.profile; //TODO probably useless
+        const { id: profileId } = req.profile;
         const userId = parseInt(req.params.userId, DECIMAL_RADIX);
         const { amount } = req.body;
+
+        AmountValidator.validate(amount);
+        IdValidator.validate(userId);
 
         await this.moneyService.depositToUser({
             currentUserId: profileId,

@@ -4,6 +4,8 @@ const BusinessDomainError = require('../services/errors/business-domain-error');
 const NotAllowedError = require('../services/errors/not-allowed-error');
 const ResourceNotFoundError = require('../services/errors/resource-not-found-error');
 const MissingParametersError = require('../services/errors/missing-parameters-error');
+const ValidationError = require('../controllers/validators/validation-error');
+
 
 function handleErrors(error, req, res, next) {
     let response = error.message;
@@ -20,7 +22,9 @@ function handleErrors(error, req, res, next) {
             httpCode = StatusCodes.NOT_FOUND;
             break;
         case MissingParametersError:
+        case ValidationError:
             httpCode = StatusCodes.BAD_REQUEST;
+            break;
         default:
             response = 'Unexpected error'
             console.error(error);

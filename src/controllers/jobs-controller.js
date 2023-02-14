@@ -1,5 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 
+const IdValidator = require('./validators/id-validator');
+
 
 class JobsController {
     constructor({
@@ -22,6 +24,8 @@ class JobsController {
     pay = async (req, res) => {
         const { id: profileId } = req.profile;
         const { jobId } = req.params;
+
+        IdValidator.validate(jobId);
 
         await this.jobsService.pay({
             userId: profileId,
