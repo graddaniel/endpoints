@@ -1,5 +1,8 @@
 const { QueryTypes } = require('sequelize');
 
+const BusinessDomainError = require('./errors/business-domain-error');
+const NotAllowedError = require('./errors/not-allowed-error');
+const ResourceNotFoundError = require('./errors/resource-not-found-error');
 
 class MoneyService {
     constructor({
@@ -18,8 +21,7 @@ class MoneyService {
         } = criteria;
 
         if (currentUserId !== targetUserId) {
-            //TODO custom error
-            throw new Error('Cannot deposit to another account');
+            throw new NotAllowedError('Not allowed to deposit to another account');
         }
 
         const selectUnpaidJobsValueQuery = ` \
@@ -43,8 +45,7 @@ AND j.paid IS NULL \
 
         const unpaidJobsValue = unpaidJobsValueQueryResult[0].unpaidJobsValue;
         if (amount > unpaidJobsValue * 25/100) {
-            //TODO custom error
-            throw new Error('Cannot deposit more than 25% of all unpaid jobs value');
+            throw new BusinessDomainError('Cannot deposit more than 25% of all unpaid jobs value');
         }
 
         await this.dataModels.profile.increment({
@@ -56,8 +57,17 @@ AND j.paid IS NULL \
         });
     }
 
-    //TODO if transaction argument is missing, create it here to make sure whole the function is atomi
-    transfer = async (criteria, transaction) => {
+    transfer = (criteria, transaction) => {
+        if (!transaction) {
+            return this.sequelize.transaction(
+                async newTransaction => await this._transfer(criteria, newTransaction)
+            );
+        }
+
+        return this._transfer(criteria, transaction);
+    }
+
+    _transfer = async (criteria, transaction) => {
         const {
             fromId,
             toId,
@@ -70,13 +80,11 @@ AND j.paid IS NULL \
             transaction,
         });
         if (!issuer) {
-            //TODO custom error
-            throw new Error('User not found')
+            throw new ResourceNotFoundError(`User not found. userId: ${fromId}`);
         }
 
         if (issuer.balance < amount) {
-            //TODO custom error
-            throw new Error('Insufficient funds');
+            throw new BusinessDomainError('Insufficient funds');
         }
 
         await this.dataModels.profile.decrement({

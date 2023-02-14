@@ -1,12 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { StatusCodes } = require('http-status-codes');
 const wrap = require('express-async-wrapper');
 const config = require('config');
 const Sequelize = require('sequelize');
 
 const { initializeModels } = require('./model');
 const { getProfile } = require('./middleware/get-profile');
+const handleErrors = require('./middleware/handle-errors');
 const ContractsService = require('./services/contracts-service');
 const JobsService = require('./services/jobs-service');
 const MoneyService = require('./services/money-service');
@@ -28,6 +28,7 @@ the deposit amount should not exceed 25% of all user's unpaid jobs values summed
 Portential improvements:
 -Decoupling of persistance library from the services (sequelize is passed to services)
 -Groupping routes together and moving their definitions into separate files
+-Profile operations could go into a separate service
 
 TODO:
 -custom error handler with custom errors
@@ -50,13 +51,7 @@ class Application {
         this.initializeControllers();
         this.initializeRoutes();
 
-        //TODO export to middleware
-        this.app.use((error, req, res, next) => {
-            console.error(`Custom error handler: ${error}`);
-            console.error(error);
-
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
-        });
+        this.app.use(handleErrors);
     }
 
     initializeServices = () => {

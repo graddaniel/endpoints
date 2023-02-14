@@ -1,6 +1,9 @@
 // TODO Dont couple this class with persistance layer
 const { Op } = require('sequelize');
 
+const NotAllowedError = require('./errors/not-allowed-error');
+const ResourceNotFoundError = require('./errors/resource-not-found-error');
+
 
 class ContractsService {
     constructor({
@@ -20,22 +23,19 @@ class ContractsService {
         });
 
         if (!contract) {
-            //TODO custom error
-            throw new Error('Contract not found');
+            throw new ResourceNotFoundError(`Contract not found. contractId: ${contractId}`);
         }
 
         if (
             contract.clientId !== profileId &&
             contract.contractorId !== profileId
         ) {
-            //TODO custom error
-            throw new Error(`You're not allowed to access this contract`);
+            throw new NotAllowedError(`You are not allowed to access this contract. contractId: ${contractId}`);
         }
 
         return contract;
     }
 
-    //TODO add limit
     getAllUsersContracts = async ({
         userId,
     }) => {

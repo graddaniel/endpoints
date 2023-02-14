@@ -1,4 +1,5 @@
 const { QueryTypes } = require('sequelize');
+const BusinessDomainError = require('./errors/business-domain-error');
 
 
 class JobsService {
@@ -34,8 +35,7 @@ class JobsService {
             });
 
             if (contract.status !== 'in_progress') {
-                //TODO custom error
-                throw new Error('Failure. This job is a part of an inactive contract.');
+                throw new BusinessDomainError('This job is a part of an inactive contract.');
             }
     
             await this.moneyService.transfer({

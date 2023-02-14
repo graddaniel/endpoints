@@ -1,14 +1,14 @@
 
-const { StatusCodes } = require('http-status-codes');
+const MissingParametersError = require('../services/errors/missing-parameters-error');
+const ResourceNotFoundError = require('../services/errors/resource-not-found-error');
 
 
 async function getProfile (req, res, next) {
-    //TODO replace this with ProfileService call
     const { profile: profileModel } = req.app.get('models');
 
     const profileId = req.get('profile_id');
     if (!profileId) {
-        return res.status(StatusCodes.UNAUTHORIZED).send('Missing profile_id header');
+        throw new MissingParametersError('Missing profile_id header');
     }
 
     const profile = await profileModel.findOne({
@@ -17,7 +17,7 @@ async function getProfile (req, res, next) {
         },
     });
     if (!profile) {
-        return res.status(StatusCodes.UNAUTHORIZED).send('Profile not found');
+        throw new ResourceNotFoundError('Profile not found');
     }
 
     req.profile = profile;
